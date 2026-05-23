@@ -1,8 +1,12 @@
 package com.dfs;
 
+import com.dfs.client.analyzer.DuplicateDetector;
+import com.dfs.client.analyzer.KeywordAnalyzer;
 import com.dfs.client.scanner.FileScanner;
+import com.dfs.client.threading.TaskManager;
 import com.dfs.client.watcher.FolderWatcher;
 import com.dfs.shared.model.FileRecord;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 
@@ -31,20 +35,58 @@ public class PrimaryController {
     @FXML
     private void scanFiles() {
 
-        FileScanner scanner =
-                new FileScanner();
-
-        List<FileRecord> files =
-                scanner.scanFolder(folder);
-
         outputArea.clear();
 
-        for (FileRecord file : files) {
+        TaskManager.runTask(() -> {
 
-            outputArea.appendText(
-                    file.toString()
-                            + "\n\n"
-            );
-        }
+            FileScanner scanner =
+                    new FileScanner();
+
+            List<FileRecord> files =
+                    scanner.scanFolder(folder);
+
+            KeywordAnalyzer analyzer =
+                    new KeywordAnalyzer();
+
+            DuplicateDetector detector =
+                    new DuplicateDetector();
+
+            String duplicates =
+                    detector.detect(files);
+
+            Platform.runLater(() -> {
+
+                for (FileRecord file :
+                        files) {
+
+                    outputArea.appendText(
+                            file.toString()
+                                    + "\n"
+                    );
+
+                    String keywords =
+                            analyzer.analyze(
+                                    file.getPath()
+                            );
+
+                    if (!keywords.isEmpty()) {
+
+                        outputArea.appendText(
+                                "Keywords → "
+                                        + keywords
+                                        + "\n"
+                        );
+                    }
+
+                    outputArea.appendText(
+                            "\n"
+                    );
+                }
+
+                outputArea.appendText(
+                        duplicates
+                );
+            });
+        });
     }
 }
