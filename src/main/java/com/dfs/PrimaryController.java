@@ -9,6 +9,7 @@ import com.dfs.shared.model.FileRecord;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
+import com.dfs.client.rmi.RMIClient;
 
 import java.util.List;
 
@@ -33,60 +34,62 @@ public class PrimaryController {
     }
 
     @FXML
-    private void scanFiles() {
+private void scanFiles() {
 
-        outputArea.clear();
+    outputArea.clear();
 
-        TaskManager.runTask(() -> {
+    TaskManager.runTask(() -> {
 
-            FileScanner scanner =
-                    new FileScanner();
+        FileScanner scanner =
+                new FileScanner();
 
-            List<FileRecord> files =
-                    scanner.scanFolder(folder);
+        List<FileRecord> files =
+                scanner.scanFolder(folder);
 
-            KeywordAnalyzer analyzer =
-                    new KeywordAnalyzer();
+        KeywordAnalyzer analyzer =
+                new KeywordAnalyzer();
 
-            DuplicateDetector detector =
-                    new DuplicateDetector();
+        DuplicateDetector detector =
+                new DuplicateDetector();
 
-            String duplicates =
-                    detector.detect(files);
+        String duplicates =
+                detector.detect(files);
 
-            Platform.runLater(() -> {
+        new RMIClient()
+                .sendData(files);
 
-                for (FileRecord file :
-                        files) {
+        Platform.runLater(() -> {
 
-                    outputArea.appendText(
-                            file.toString()
-                                    + "\n"
-                    );
+            for (FileRecord file :
+                    files) {
 
-                    String keywords =
-                            analyzer.analyze(
-                                    file.getPath()
-                            );
+                outputArea.appendText(
+                        file.toString()
+                                + "\n"
+                );
 
-                    if (!keywords.isEmpty()) {
-
-                        outputArea.appendText(
-                                "Keywords → "
-                                        + keywords
-                                        + "\n"
+                String keywords =
+                        analyzer.analyze(
+                                file.getPath()
                         );
-                    }
+
+                if (!keywords.isEmpty()) {
 
                     outputArea.appendText(
-                            "\n"
+                            "Keywords → "
+                                    + keywords
+                                    + "\n"
                     );
                 }
 
                 outputArea.appendText(
-                        duplicates
+                        "\n"
                 );
-            });
+            }
+
+            outputArea.appendText(
+                    duplicates
+            );
         });
-    }
-}
+    });
+} } 

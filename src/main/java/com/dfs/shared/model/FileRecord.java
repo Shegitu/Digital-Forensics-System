@@ -1,14 +1,15 @@
 package com.dfs.shared.model;
 
-public class FileRecord {
+import java.io.Serializable;
+
+public class FileRecord
+        implements Serializable {
 
     private String fileName;
     private String path;
     private long size;
     private long lastModified;
     private String hash;
-
-    public FileRecord() {}
 
     public FileRecord(String fileName,
                       String path,
@@ -45,12 +46,13 @@ public class FileRecord {
 
     @Override
     public String toString() {
-        return "FileRecord{" +
-                "fileName='" + fileName + '\'' +
-                ", path='" + path + '\'' +
-                ", size=" + size +
-                ", lastModified=" + lastModified +
-                ", hash='" + hash + '\'' +
-                '}';
+
+        return fileName +
+                " | " +
+                path +
+                " | " +
+                size +
+                " bytes | " +
+                hash;
     }
 }
