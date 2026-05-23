@@ -1,29 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 
-<AnchorPane prefHeight="500.0"
-            prefWidth="700.0"
-            xmlns="http://javafx.com/javafx/21"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.dfs.PrimaryController">
-
+<VBox prefHeight="600.0" prefWidth="850.0" spacing="10.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dfs.PrimaryController">
+    <padding>
+        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+    </padding>
     <children>
-
-        <Button layoutX="284.0"
-                layoutY="14.0"
-                mnemonicParsing="false"
-                onAction="#scanFiles"
-                text="Scan Files" />
-
-        <TextArea fx:id="outputArea"
-                  layoutX="14.0"
-                  layoutY="60.0"
-                  prefHeight="420.0"
-                  prefWidth="670.0"/>
-
+        <HBox alignment="CENTER_LEFT" spacing="15.0">
+            <children>
+                <Button fx:id="btnScan" mnemonicParsing="false" onAction="#scanFiles" prefHeight="30.0" prefWidth="120.0" text="Scan Engine Run" />
+                <Label fx:id="lblStatus" text="System Status: Listening for client node reports..." textFill="#2e7d32" />
+            </children>
+        </HBox>
+        <TabPane prefHeight="520.0" prefWidth="820.0" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+            <tabs>
+                <Tab text="Live Forensic Registry">
+                    <content>
+                        <TableView fx:id="tblFiles" prefHeight="200.0" prefWidth="200.0">
+                            <columns>
+                                <TableColumn fx:id="colIp" prefWidth="110.0" text="Origin Node IP" />
+                                <TableColumn fx:id="colName" prefWidth="150.0" text="Artifact Name" />
+                                <TableColumn fx:id="colSize" prefWidth="90.0" text="Size (Bytes)" />
+                                <TableColumn fx:id="colHash" prefWidth="240.0" text="Cryptographic Hash (MD5)" />
+                                <TableColumn fx:id="colKeywords" prefWidth="210.0" text="Flagged Signatures" />
+                            </columns>
+                        </TableView>
+                    </content>
+                </Tab>
+                <Tab text="System Operational Console">
+                    <content>
+                        <TextArea fx:id="outputArea" editable="false" prefHeight="200.0" prefWidth="200.0" style="-fx-font-family: 'Courier New';" />
+                    </content>
+                </Tab>
+            </tabs>
+        </TabPane>
     </children>
-
-</AnchorPane>
+</VBox>

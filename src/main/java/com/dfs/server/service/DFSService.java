@@ -1,6 +1,6 @@
 package com.dfs.server.service;
 
-import com.dfs.server.database.InMemoryDatabase;
+import com.dfs.server.database.ServerData;
 import com.dfs.shared.model.FileRecord;
 import com.dfs.shared.remote.DFSRemote;
 
@@ -15,34 +15,13 @@ public class DFSService extends UnicastRemoteObject implements DFSRemote {
     }
 
     @Override
-    public void sendFileData(List<FileRecord> files) throws RemoteException {
+    public void sendFileData(String clientIp, List<FileRecord> files) throws RemoteException {
 
-        System.out.println("\nCLIENT CONNECTED");
+        System.out.println("CLIENT: " + clientIp + " SENT DATA");
+        System.out.println("FILES RECEIVED: " + files.size());
 
-        InMemoryDatabase.saveFiles(files);
+        ServerData.saveFiles(clientIp, files);
 
-        System.out.println("FILES STORED: " + files.size());
-
-        detectDuplicates(files);
-    }
-
-    private void detectDuplicates(List<FileRecord> files) {
-
-        for (FileRecord f1 : files) {
-
-            for (FileRecord f2 : InMemoryDatabase.getAllFiles()) {
-
-                if (!f1.getPath().equals(f2.getPath())
-                        && f1.getHash().equals(f2.getHash())) {
-
-                    System.out.println(
-                            "DUPLICATE DETECTED: "
-                                    + f1.getFileName()
-                                    + " == "
-                                    + f2.getFileName()
-                    );
-                }
-            }
-        }
+        System.out.println("DATA STORED SUCCESSFULLY");
     }
 }
